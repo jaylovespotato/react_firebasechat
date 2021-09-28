@@ -10,7 +10,7 @@ function LoginPage() {
 
     const { register, formState: { errors }, handleSubmit } = useForm({mode:"onChange"});
 
-    // firebase에서 이메일로 유저 생성
+    // firebase에서 이메일로 유저 생성 
     const onSubmit = async (data) =>{
         try {
             

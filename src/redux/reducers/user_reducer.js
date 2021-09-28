@@ -1,5 +1,6 @@
 import {
-    SET_USER
+    SET_USER,
+    CLEAR_USER
 } from '../actions/types'
 
 
@@ -12,13 +13,19 @@ const initialUserState = {
 }
 
 export default function(state = initialUserState, action){
+    // dispatch -> action을 통해 들어오면 user정보를 reducer에서 받을 때, 
     switch(action.type){
         case SET_USER:
-            // dispatch -> action을 통해 들어오면 user정보를 reducer에서 받을 때, 
             return{
                 ...state,
                 currentUser: action.payload,
                 isLoading: false
+            }
+
+        case CLEAR_USER:
+            return{
+                currentUser: null,
+                isLoading:false
             }
         default:
             return state;

@@ -1,5 +1,6 @@
 import{
-    SET_USER
+    SET_USER,
+    CLEAR_USER
 } from './types'
 
 
@@ -9,3 +10,10 @@ export function setUser(user){
         payload: user
     }
 }
+
+export function clearUser(){
+    return{
+        type: CLEAR_USER
+    }
+}
+
