@@ -13,6 +13,7 @@ import { setUser, clearUser } from './redux/actions/user_action';
 
 function App(props) {
   
+  //history 써야 페이지간이동가능
   let history = useHistory();
   let dispatch = useDispatch();
   // 스토어에서 state 가져오는 것
