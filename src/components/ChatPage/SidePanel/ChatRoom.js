@@ -4,6 +4,8 @@ import {FaRegSmileWink} from 'react-icons/fa'
 import {FaPlus} from 'react-icons/fa'
 import { connect } from 'react-redux'
 import firebase from '../../../firebase'
+import {setCurrentChatRoom} from '../../../redux/actions/chatRoom_action'
+
 
 export class ChatRoom extends Component {
 
@@ -13,12 +15,25 @@ export class ChatRoom extends Component {
         describtion:"",
         chatRoomRef: firebase.database().ref("chatRooms"),
         chatRooms:[],
+        firstLoad: true,
+        activeChatRoomId:""
     }
 
     componentDidMount(){
         this.AddChatRoomsListeners();
     }
 
+    setFirstChatRoom =()=>{
+        const firstChatRoom = this.state.chatRooms[0];
+        
+        if(this.state.firstLoad && this.state.chatRooms.length >0){
+            this.props.dispatch(setCurrentChatRoom(firstChatRoom));
+            this.setState({firstLoad: false, activeChatRoomId: firstChatRoom.id})
+        }
+        
+    }
+
+    //DB에 챗룸을 리스너로 하나하나 다 들고오는거
     AddChatRoomsListeners =() =>{
         let chatRoomsArray = [];
         // chat room에 데이터가 들어올 때(즉 채팅룸 생성), datasnapshot 안에 listen 한 게 들어오고
@@ -26,7 +41,9 @@ export class ChatRoom extends Component {
             // 그거를 다시 chatRoomArray에 넣음
             chatRoomsArray.push(DataSnapshot.val());
             console.log("chatRoomsArray", chatRoomsArray)
-            this.setState({chatRooms: chatRoomsArray})
+            //다 가져온 후에, 첫 화면은 첫번째 톡방으로 설정하는 게 뒷부분의 내용임
+            this.setState({chatRooms: chatRoomsArray},
+                ()=> this.setFirstChatRoom());
         })
     }
 
@@ -52,12 +69,21 @@ export class ChatRoom extends Component {
     isFormValid = (name, description)=>
         name && description;
 
-
+    changeChatRoom = (room)=>{
+        this.props.dispatch(setCurrentChatRoom(room))
+        this.setState({activeChatRoomId:room.id})
+    }
+    //렌더할 때 현재 클릭한 방의 정보를 리덕스에 넣어주자. 함수형같으면 useDispatch 하겠는데, 여기선 prop을 이용해야함
     renderChatRooms = (chatRoom) =>
         chatRoom.length >0 &&
 
+        
         chatRoom.map(room=>(
-            <li key={room.id}>
+            <li
+                key={room.id}
+                style= {{backgroundColor: room.id===this.state.activeChatRoomId && "#ffffff45"}}
+                onClick = {()=> this.changeChatRoom(room)}
+            >
                 # {room.name}
             </li>
         ))
