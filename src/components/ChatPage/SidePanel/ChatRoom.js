@@ -11,7 +11,23 @@ export class ChatRoom extends Component {
         show: false,
         name:"",
         describtion:"",
-        chatRoomRef: firebase.database().ref("chatRooms")
+        chatRoomRef: firebase.database().ref("chatRooms"),
+        chatRooms:[],
+    }
+
+    componentDidMount(){
+        this.AddChatRoomsListeners();
+    }
+
+    AddChatRoomsListeners =() =>{
+        let chatRoomsArray = [];
+        // chat room에 데이터가 들어올 때(즉 채팅룸 생성), datasnapshot 안에 listen 한 게 들어오고
+        this.state.chatRoomRef.on("child_added", DataSnapshot =>{
+            // 그거를 다시 chatRoomArray에 넣음
+            chatRoomsArray.push(DataSnapshot.val());
+            console.log("chatRoomsArray", chatRoomsArray)
+            this.setState({chatRooms: chatRoomsArray})
+        })
     }
 
     handleClose = () =>{
@@ -36,6 +52,18 @@ export class ChatRoom extends Component {
     isFormValid = (name, description)=>
         name && description;
 
+
+    renderChatRooms = (chatRoom) =>
+        chatRoom.length >0 &&
+
+        chatRoom.map(room=>(
+            <li key={room.id}>
+                # {room.name}
+            </li>
+        ))
+    
+
+
     addChatRoom = async ()=>{
         // push를 하면 자동으로 key 생성.
         const key = this.state.chatRoomRef.push().key;
@@ -48,7 +76,7 @@ export class ChatRoom extends Component {
             name: name,
             description: description,
             createdBy:{
-                // name: user.displayName,
+                name: user.displayName,
                 image: user.photoURL
             }
         }
@@ -89,6 +117,10 @@ export class ChatRoom extends Component {
                         onClick={this.handleShow}  
                         />
                     </div>
+
+                    <ul style={{ listStyleType: 'none', padding: 0 }}>
+                        {this.renderChatRooms(this.state.chatRooms)}
+                    </ul>
             
                     {/*  Add Modal */}
                     <div>            
