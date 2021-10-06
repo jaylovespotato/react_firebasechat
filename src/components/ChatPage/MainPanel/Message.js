@@ -1,10 +1,58 @@
+import moment from 'moment'
 import React from 'react'
+import { Media } from 'react-bootstrap'
 
-function Message() {
+
+
+function Message({message, user}) {
+
+    const timeFromNow = timestamp =>{
+        moment(timestamp).fromNow();
+    }
+
+    const isImage = (msg) =>{
+        return msg.hasOwnProperty("image") && !message.hasOwnProperty("content")
+    }
+
+    const isMessageMine = (msg, user) =>{
+        return msg.user.id == user.uid
+    }
+
     return (
-        <div>
-            
-        </div>
+        <Media style={{
+            marginBottom: '1rem'
+        }}>
+            <img
+                style={{
+                    borderRadius:'.2rem'
+                }}
+                width={48}
+                height={48}
+                className="mr-3"
+                src={message.user.image}
+                alt={message.user.name}
+            />
+            <Media.Body style={{
+                backgroundColor: isMessageMine(message, user) && "#ECECEC"
+            }}>
+                
+
+                <h6>
+                    {message.user.name}{"  "}
+                    <span style={{ fontSize:'10px', color:'gray'}}>
+                        {timeFromNow(message.timestamp)}
+                    </span>
+                
+                </h6>
+                {isImage(message)?
+                <img style={{ maxWidth:'300px'}} alt="이미지" src={message.image} />
+                :
+                <p>
+                    {message.content}
+                </p>
+                    }
+            </Media.Body>
+        </Media>
     )
 }
 
